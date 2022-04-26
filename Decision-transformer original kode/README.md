@@ -12,7 +12,7 @@ A link to our paper can be found on [arXiv](https://arxiv.org/abs/2106.01345).
 Official codebase for [Decision Transformer: Reinforcement Learning via Sequence Modeling](https://sites.google.com/berkeley.edu/decision-transformer).
 Contains scripts to reproduce experiments.
 
-![image info](./architecture.png)
+![image info](architecture.png)
 
 ## Instructions
 
