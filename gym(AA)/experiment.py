@@ -28,7 +28,7 @@ def experiment(
         variant,
 ):
     device = variant.get('device', 'cuda')
-    log_to_wandb = variant.get('log_to_wandb', False)
+    log_to_wandb = variant.get('log_to_wandb', True)
 
     env_name, dataset = variant['env'], variant['dataset']
     model_type = variant['model_type']
@@ -269,8 +269,9 @@ def experiment(
         wandb.init(
             name=exp_prefix,
             group=group_name,
-            project='decision-transformer',
-            config=variant
+            project='AlphaAttention - decision-transformer',
+            config=variant,
+            entity = "alphaattention"
         )
         # wandb.watch(model)  # wandb has some bug
 
