@@ -13,7 +13,7 @@ from decision_transformer.models.decision_transformer import DecisionTransformer
 from decision_transformer.models.mlp_bc import MLPBCModel
 from decision_transformer.training.act_trainer import ActTrainer
 from decision_transformer.training.seq_trainer import SequenceTrainer
-#død over ca
+#død over ca igen igen ige igengeigien
 
 
 def discount_cumsum(x, gamma):
