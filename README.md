@@ -3,7 +3,7 @@
 The code is required to run in a Linux setup, because of the use of Mujoco, which is only available on Linux. Therefore the first step is to install Ubuntu using [Rufus](https://rufus.ie/en/) and then to boot Ubuntu on e.g. a Windows computer using [this guide](https://itsfoss.com/install-ubuntu-1404-dual-boot-mode-windows-8-81-uefi/?fbclid=IwAR0wImYmF4EMh3DvoUI2stqLJ293N4p-tglvzx06UVyum-E3rWfJaQIlFNw). Unless the computer installed on is running an MPR partitioning system, in which [this guide](https://itsfoss.com/install-ubuntu-dual-boot-mode-windows/) should be followed instead. It is important during the install of the setup that "can use third-party software and graphics" is accepted, as the system will otherwise run very slowly.
 
 After booting Ubuntu on our pc, we installed Anaconda using [this guide](https://linuxize.com/post/how-to-install-anaconda-on-ubuntu-20-04/). It is important that it is this version or 4.11.0, as well as downloading [the decision transformer code](https://github.com/kzl/decision-transformer). 
-#Dette er en test
+#Dette er en test test
 
 The next step is to download MuJoCo200 by going to [the website](https://roboti.us/download.html), as well as [the license key](https://roboti.us/file/mjkey.txt), which should be put inside the directory of ````.mujoco````. When downloaded we created a secret directory ````.mujoco```` (The secret files can be seen by pressing ````Ctrl+H````), and in this directory the downloaded MuJoCo200 was placed. The path should look like this 
 ````
