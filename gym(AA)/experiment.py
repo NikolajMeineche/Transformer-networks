@@ -291,7 +291,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--model_type', type=str, default='dt')  # dt for decision transformer, bc for behavior cloning
     parser.add_argument('--embed_dim', type=int, default=128) # stabilitet test her
-    parser.add_argument('--n_layer', type=int, default=3) # stabilitet test her
+    parser.add_argument('--n_layer', type=int, default=3) # stabilitet test her testest
     parser.add_argument('--n_head', type=int, default=1)
     parser.add_argument('--activation_function', type=str, default='relu')
     parser.add_argument('--dropout', type=float, default=0.1)
