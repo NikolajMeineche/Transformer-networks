@@ -28,7 +28,7 @@ class DecisionTransformer(TrajectoryModel):
 
         self.hidden_size = hidden_size
         config = transformers.GPT2Config(
-            vocab_size=1,  # doesn't matter -- we don't use the vocab
+            vocab_size=1,  # doesn't matter -- we don't use the vocab. Defines the number of different tokens that can be represented by the inputs_ids passed
             n_embd=hidden_size,
             **kwargs
         )
@@ -51,6 +51,7 @@ class DecisionTransformer(TrajectoryModel):
         )
         self.predict_return = torch.nn.Linear(hidden_size, 1)
 
+    # output: state_preds, action_preds, return_preds
     def forward(self, states, actions, rewards, returns_to_go, timesteps, attention_mask=None):
 
         batch_size, seq_length = states.shape[0], states.shape[1]
@@ -72,12 +73,14 @@ class DecisionTransformer(TrajectoryModel):
 
         # this makes the sequence look like (R_1, s_1, a_1, R_2, s_2, a_2, ...)
         # which works nice in an autoregressive sense since states predict actions
+        # Det vi tegnede på tavlen
         stacked_inputs = torch.stack(
             (returns_embeddings, state_embeddings, action_embeddings), dim=1
         ).permute(0, 2, 1, 3).reshape(batch_size, 3*seq_length, self.hidden_size)
         stacked_inputs = self.embed_ln(stacked_inputs)
 
         # to make the attention mask fit the stacked inputs, have to stack it as well
+        # Den gør nok det samme som vi tegnede på tavlen
         stacked_attention_mask = torch.stack(
             (attention_mask, attention_mask, attention_mask), dim=1
         ).permute(0, 2, 1).reshape(batch_size, 3*seq_length)
@@ -91,6 +94,7 @@ class DecisionTransformer(TrajectoryModel):
 
         # reshape x so that the second dimension corresponds to the original
         # returns (0), states (1), or actions (2); i.e. x[:,1,t] is the token for s_t
+        # "Boxen"
         x = x.reshape(batch_size, seq_length, 3, self.hidden_size).permute(0, 2, 1, 3)
 
         # get predictions
@@ -121,16 +125,14 @@ class DecisionTransformer(TrajectoryModel):
                 [torch.zeros((states.shape[0], self.max_length-states.shape[1], self.state_dim), device=states.device), states],
                 dim=1).to(dtype=torch.float32)
             actions = torch.cat(
-                [torch.zeros((actions.shape[0], self.max_length - actions.shape[1], self.act_dim),
-                             device=actions.device), actions],
+                [torch.zeros((actions.shape[0], self.max_length - actions.shape[1], self.act_dim), device=actions.device), actions],
                 dim=1).to(dtype=torch.float32)
             returns_to_go = torch.cat(
                 [torch.zeros((returns_to_go.shape[0], self.max_length-returns_to_go.shape[1], 1), device=returns_to_go.device), returns_to_go],
                 dim=1).to(dtype=torch.float32)
             timesteps = torch.cat(
                 [torch.zeros((timesteps.shape[0], self.max_length-timesteps.shape[1]), device=timesteps.device), timesteps],
-                dim=1
-            ).to(dtype=torch.long)
+                dim=1).to(dtype=torch.long)
         else:
             attention_mask = None
 
