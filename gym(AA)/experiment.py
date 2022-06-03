@@ -13,7 +13,8 @@ from decision_transformer.models.decision_transformer import DecisionTransformer
 from decision_transformer.models.mlp_bc import MLPBCModel
 from decision_transformer.training.act_trainer import ActTrainer
 from decision_transformer.training.seq_trainer import SequenceTrainer
-#my chnges testtest
+#død over ca
+
 
 def discount_cumsum(x, gamma):
     discount_cumsum = np.zeros_like(x)
