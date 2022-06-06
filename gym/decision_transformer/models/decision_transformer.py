@@ -55,7 +55,7 @@ class DecisionTransformer(TrajectoryModel):
         self.predict_return1 = torch.nn.Linear(hidden_size, 1) #bjarke
         self.predict_return2 = torch.nn.Linear(hidden_size, 1) #bjarke
 
-    def forward(self, states, actions, rewards, returns_to_go, timesteps, attention_mask=None):
+    def forward(self, states, actions, r1,r2, returns_to_go1,returns_to_go2, timesteps, attention_mask=None):
 
         batch_size, seq_length = states.shape[0], states.shape[1]
 
@@ -66,8 +66,8 @@ class DecisionTransformer(TrajectoryModel):
         # embed each modality with a different head
         state_embeddings = self.embed_state(states)
         action_embeddings = self.embed_action(actions)
-        returns_embeddings1 = self.embed_return1(returns_to_go) #bjarke
-        returns_embeddings2 = self.embed_return2(returns_to_go) #bjarke
+        returns_embeddings1 = self.embed_return1(returns_to_go1) #bjarke
+        returns_embeddings2 = self.embed_return2(returns_to_go2) #bjarke
         time_embeddings = self.embed_timestep(timesteps)
 
         # time embeddings are treated similar to positional embeddings
@@ -108,18 +108,22 @@ class DecisionTransformer(TrajectoryModel):
 
         return state_preds, action_preds, return_preds1, return_preds2
 
-    def get_action(self, states, actions, rewards, returns_to_go, timesteps, **kwargs):
+    def get_action(self, states, actions, rewards1,rewards2, returns_to_go1,returns_to_go2, timesteps, **kwargs):
         # we don't care about the past rewards in this model
 
         states = states.reshape(1, -1, self.state_dim)
         actions = actions.reshape(1, -1, self.act_dim)
-        returns_to_go = returns_to_go.reshape(1, -1, 1)
+        returns_to_go1 = returns_to_go1.reshape(1, -1, 1)
+        returns_to_go2 = returns_to_go2.reshape(1, -1, 1)
+
         timesteps = timesteps.reshape(1, -1)
 
         if self.max_length is not None:
             states = states[:,-self.max_length:]
             actions = actions[:,-self.max_length:]
-            returns_to_go = returns_to_go[:,-self.max_length:]
+            returns_to_go1 = returns_to_go1[:,-self.max_length:]
+            returns_to_go2 = returns_to_go2[:,-self.max_length:]
+
             timesteps = timesteps[:,-self.max_length:]
 
             # pad all tokens to sequence length
@@ -132,8 +136,12 @@ class DecisionTransformer(TrajectoryModel):
                 [torch.zeros((actions.shape[0], self.max_length - actions.shape[1], self.act_dim),
                              device=actions.device), actions],
                 dim=1).to(dtype=torch.float32)
-            returns_to_go = torch.cat(
-                [torch.zeros((returns_to_go.shape[0], self.max_length-returns_to_go.shape[1], 1), device=returns_to_go.device), returns_to_go],
+            returns_to_go1 = torch.cat(
+                [torch.zeros((returns_to_go1.shape[0], self.max_length-returns_to_go1.shape[1], 1), device=returns_to_go1.device), returns_to_go1],
+                dim=1).to(dtype=torch.float32)
+            returns_to_go2 = torch.cat(
+                [torch.zeros((returns_to_go2.shape[0], self.max_length - returns_to_go2.shape[1], 1),
+                             device=returns_to_go2.device), returns_to_go2],
                 dim=1).to(dtype=torch.float32)
             timesteps = torch.cat(
                 [torch.zeros((timesteps.shape[0], self.max_length-timesteps.shape[1]), device=timesteps.device), timesteps],
@@ -142,7 +150,7 @@ class DecisionTransformer(TrajectoryModel):
         else:
             attention_mask = None
 
-        _, action_preds, return_preds = self.forward(
-            states, actions, None, returns_to_go, timesteps, attention_mask=attention_mask, **kwargs)
+        _, action_preds, return_preds1,return_preds2 = self.forward(
+            states, actions, None,None, returns_to_go1,returns_to_go2, timesteps, attention_mask=attention_mask, **kwargs)
 
         return action_preds[0,-1]
