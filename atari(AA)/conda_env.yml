@@ -1,4 +1,4 @@
-name: decision-transformer-atari
+name: decision-transformer-atari(AA)
 channels:
 - pytorch
 dependencies:
@@ -10,13 +10,13 @@ dependencies:
 - opencv
 - pip
 - pip:
-  - atari-py
+  - atari(AA)-py
   - pyprind
   - tensorflow-gpu>=1.13
   - absl-py
-  - atari-py
+  - atari(AA)-py
   - gin-config
-  - gym
+  - gym(AA)
   - tqdm
   - blosc
   - git+https://github.com/google/dopamine.git
