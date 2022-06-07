@@ -130,7 +130,7 @@ export MUJOCO_PY_MJKEY_PATH=$HOME/.mujoco/mujoco200/mjkey.txt
 
 For solving the issue you need to open .bashrc in a terminal: 
 ````
-nano /.bashrc
+nano ~/.bashrc
 ````
 And in the bottom add the following
 ````
