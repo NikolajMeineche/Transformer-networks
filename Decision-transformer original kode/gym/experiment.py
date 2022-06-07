@@ -27,7 +27,7 @@ def experiment(
         exp_prefix,
         variant,
 ):
-    device = variant.get('device', 'cuda')
+    device = variant.get('device', 'cpu')
     log_to_wandb = variant.get('log_to_wandb', False)
 
     env_name, dataset = variant['env'], variant['dataset']
@@ -44,6 +44,11 @@ def experiment(
         env = gym.make('HalfCheetah-v3')
         max_ep_len = 1000
         env_targets = [[6000,6000], [3000, 3000]]
+        scale = 1000.
+    elif env_name == 'm_reward-halfcheetah':
+        env = gym.make('HalfCheetah-v3')
+        max_ep_len = 1000
+        env_targets = [[6000, 6000], [3000, 3000]]
         scale = 1000.
     elif env_name == 'walker2d':
         env = gym.make('Walker2d-v3')
@@ -292,7 +297,7 @@ def experiment(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', type=str, default='hopper')
+    parser.add_argument('--env', type=str, default='m_reward-halfcheetah')
     parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
     parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
     parser.add_argument('--K', type=int, default=20)
@@ -310,7 +315,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_eval_episodes', type=int, default=100)
     parser.add_argument('--max_iters', type=int, default=10)
     parser.add_argument('--num_steps_per_iter', type=int, default=10000)
-    parser.add_argument('--device', type=str, default='cuda')
+    parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
     
     args = parser.parse_args()

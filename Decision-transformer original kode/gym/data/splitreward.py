@@ -3,7 +3,6 @@
 import numpy as np
 import pandas as pd
 import pickle
-#test
 
 def splitreward(env, datatype):
     name = f'{env}-{datatype}-v2.pkl'
@@ -26,4 +25,4 @@ def splitreward(env, datatype):
     with open(f'{n}-{name}', 'wb') as f:
         pickle.dump(data, f)
 
-splitreward('halfcheetah','medium')
+#splitreward('halfcheetah','medium')

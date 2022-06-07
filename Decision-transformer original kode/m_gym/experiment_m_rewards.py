@@ -184,7 +184,7 @@ def experiment(
             for _ in range(num_eval_episodes):
                 with torch.no_grad():
                     if model_type == 'dt':
-                        ret, length = evaluate_episode_rtg(
+                        ret1,ret2, length = evaluate_episode_rtg(
                             env,
                             state_dim,
                             act_dim,
@@ -210,8 +210,9 @@ def experiment(
                             state_std=state_std,
                             device=device,
                         )
-                returns.append(ret)
+                returns.append(ret1+ret2)
                 lengths.append(length)
+
             return {
                 f'target_{target_rew}_return_mean': np.mean(returns),
                 f'target_{target_rew}_return_std': np.std(returns),
