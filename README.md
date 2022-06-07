@@ -132,9 +132,9 @@ For solving the issue you need to open .bashrc in a terminal:
 ````
 nano ~/.bashrc
 ````
-And in the bottom add the following with your pcname
+And in the bottom add the following
 ````
-export LD_LIBRARY_PATH=/home/pcname/.mujoco/mujoco200/bin 
+export LD_LIBRARY_PATH=home/pcname/.mujoco/mujoco200/bin 
 ````
 Then exit the .bashrc by crtl+o press enter to save and then ctrl+x to exit
 
