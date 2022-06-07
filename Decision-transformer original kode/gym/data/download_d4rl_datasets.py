@@ -32,6 +32,8 @@ for env_name in ['halfcheetah', 'hopper', 'walker2d']:
 				final_timestep = (episode_step == 1000-1)
 			for k in ['observations', 'next_observations', 'actions', 'rewards', 'terminals']:
 				data_[k].append(dataset[k][i])
+
+			#add it here
 			if done_bool or final_timestep:
 				episode_step = 0
 				episode_data = {}
