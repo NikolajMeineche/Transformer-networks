@@ -43,12 +43,7 @@ def experiment(
     elif env_name == 'halfcheetah':
         env = gym.make('HalfCheetah-v3')
         max_ep_len = 1000
-        env_targets = [[6000,6000], [3000, 3000]]
-        scale = 1000.
-    elif env_name == 'm_reward-halfcheetah':
-        env = gym.make('HalfCheetah-v3')
-        max_ep_len = 1000
-        env_targets = [[6000, 6000], [3000, 3000]]
+        env_targets = [np.array([6000,6000]), np.array([3000, 3000])]
         scale = 1000.
     elif env_name == 'walker2d':
         env = gym.make('Walker2d-v3')
@@ -61,6 +56,11 @@ def experiment(
         max_ep_len = 100
         env_targets = [76, 40]
         scale = 10.
+    elif env_name == 'm_reward-halfcheetah':
+        env = gym.make('HalfCheetah-v3')
+        max_ep_len = 1000
+        env_targets = [[6000,6000], [3000, 3000]]
+        scale = 1000.
     else:
         raise NotImplementedError
 
@@ -184,14 +184,14 @@ def experiment(
             for _ in range(num_eval_episodes):
                 with torch.no_grad():
                     if model_type == 'dt':
-                        ret, length = evaluate_episode_rtg(
+                        ret1,ret2, length = evaluate_episode_rtg(
                             env,
                             state_dim,
                             act_dim,
                             model,
                             max_ep_len=max_ep_len,
                             scale=scale,
-                            target_return=target_rew/scale,
+                            target_return=np.divide(target_rew,scale),
                             mode=mode,
                             state_mean=state_mean,
                             state_std=state_std,
@@ -210,8 +210,9 @@ def experiment(
                             state_std=state_std,
                             device=device,
                         )
-                returns.append(ret)
+                returns.append(ret1+ret2)
                 lengths.append(length)
+
             return {
                 f'target_{target_rew}_return_mean': np.mean(returns),
                 f'target_{target_rew}_return_std': np.std(returns),
@@ -312,12 +313,12 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
     parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
     parser.add_argument('--warmup_steps', type=int, default=10000)
-    parser.add_argument('--num_eval_episodes', type=int, default=100)
+    parser.add_argument('--num_eval_episodes', type=int, default=10)
     parser.add_argument('--max_iters', type=int, default=10)
-    parser.add_argument('--num_steps_per_iter', type=int, default=10000)
+    parser.add_argument('--num_steps_per_iter', type=int, default=100)
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
     
     args = parser.parse_args()
 
-    experiment('gym(AA)-experiment', variant=vars(args))
+    experiment('Vanilla_DT_gym-experiment', variant=vars(args))

@@ -13,7 +13,8 @@ from decision_transformer.models.decision_transformer import DecisionTransformer
 from decision_transformer.models.mlp_bc import MLPBCModel
 from decision_transformer.training.act_trainer import ActTrainer
 from decision_transformer.training.seq_trainer import SequenceTrainer
-#my chnges
+#død over ca igen igen ige igengeigien
+
 
 def discount_cumsum(x, gamma):
     discount_cumsum = np.zeros_like(x)
@@ -28,7 +29,7 @@ def experiment(
         variant,
 ):
     device = variant.get('device', 'cpu')
-    log_to_wandb = variant.get('log_to_wandb', False)
+    log_to_wandb = variant.get('log_to_wandb', True)
 
     env_name, dataset = variant['env'], variant['dataset']
     model_type = variant['model_type']
@@ -43,7 +44,7 @@ def experiment(
     elif env_name == 'halfcheetah':
         env = gym.make('HalfCheetah-v3')
         max_ep_len = 1000
-        env_targets = [np.array([6000,6000]), np.array([3000, 3000])]
+        env_targets = [12000, 6000]
         scale = 1000.
     elif env_name == 'walker2d':
         env = gym.make('Walker2d-v3')
@@ -56,11 +57,6 @@ def experiment(
         max_ep_len = 100
         env_targets = [76, 40]
         scale = 10.
-    elif env_name == 'm_reward-halfcheetah':
-        env = gym.make('HalfCheetah-v3')
-        max_ep_len = 1000
-        env_targets = [[6000,6000], [3000, 3000]]
-        scale = 1000.
     else:
         raise NotImplementedError
 
@@ -128,55 +124,45 @@ def experiment(
             p=p_sample,  # reweights so we sample according to timesteps
         )
 
-        s, a, r1,r2, d, rtg1,rtg2, timesteps, mask = [], [], [], [], [], [], [], [], [] #added two extra square brackets
-        for i in range(batch_size): #modified into r1 and r2
+        s, a, r, d, rtg, timesteps, mask = [], [], [], [], [], [], []
+        for i in range(batch_size):
             traj = trajectories[int(sorted_inds[batch_inds[i]])]
             si = random.randint(0, traj['rewards'].shape[0] - 1)
 
             # get sequences from dataset
             s.append(traj['observations'][si:si + max_len].reshape(1, -1, state_dim))
             a.append(traj['actions'][si:si + max_len].reshape(1, -1, act_dim))
-            r1.append(traj['r1'][si:si + max_len].reshape(1, -1, 1)) #
-            r2.append(traj['r2'][si:si + max_len].reshape(1, -1, 1)) #
+            r.append(traj['rewards'][si:si + max_len].reshape(1, -1, 1))
             if 'terminals' in traj:
                 d.append(traj['terminals'][si:si + max_len].reshape(1, -1))
             else:
                 d.append(traj['dones'][si:si + max_len].reshape(1, -1))
             timesteps.append(np.arange(si, si + s[-1].shape[1]).reshape(1, -1))
             timesteps[-1][timesteps[-1] >= max_ep_len] = max_ep_len-1  # padding cutoff
-            rtg1.append(discount_cumsum(traj['rewards'][si:], gamma=1.)[:s[-1].shape[1] + 1].reshape(1, -1, 1))
-            rtg2.append(discount_cumsum(traj['rewards'][si:], gamma=1.)[:s[-1].shape[1] + 1].reshape(1, -1, 1))
-
-            if rtg1[-1].shape[1] <= s[-1].shape[1]:
-                rtg1[-1] = np.concatenate([rtg1[-1], np.zeros((1, 1, 1))], axis=1)
-            if rtg2[-1].shape[1] <= s[-1].shape[1]:
-                rtg2[-1] = np.concatenate([rtg2[-1], np.zeros((1, 1, 1))], axis=1)
+            rtg.append(discount_cumsum(traj['rewards'][si:], gamma=1.)[:s[-1].shape[1] + 1].reshape(1, -1, 1))
+            if rtg[-1].shape[1] <= s[-1].shape[1]:
+                rtg[-1] = np.concatenate([rtg[-1], np.zeros((1, 1, 1))], axis=1)
 
             # padding and state + reward normalization
             tlen = s[-1].shape[1]
             s[-1] = np.concatenate([np.zeros((1, max_len - tlen, state_dim)), s[-1]], axis=1)
             s[-1] = (s[-1] - state_mean) / state_std
             a[-1] = np.concatenate([np.ones((1, max_len - tlen, act_dim)) * -10., a[-1]], axis=1)
-            r1[-1] = np.concatenate([np.zeros((1, max_len - tlen, 1)), r1[-1]], axis=1)
-            r2[-1] = np.concatenate([np.zeros((1, max_len - tlen, 1)), r2[-1]], axis=1)
+            r[-1] = np.concatenate([np.zeros((1, max_len - tlen, 1)), r[-1]], axis=1)
             d[-1] = np.concatenate([np.ones((1, max_len - tlen)) * 2, d[-1]], axis=1)
-            rtg1[-1] = np.concatenate([np.zeros((1, max_len - tlen, 1)), rtg1[-1]], axis=1) / scale
-            rtg2[-1] = np.concatenate([np.zeros((1, max_len - tlen, 1)), rtg2[-1]], axis=1) / scale
+            rtg[-1] = np.concatenate([np.zeros((1, max_len - tlen, 1)), rtg[-1]], axis=1) / scale
             timesteps[-1] = np.concatenate([np.zeros((1, max_len - tlen)), timesteps[-1]], axis=1)
             mask.append(np.concatenate([np.zeros((1, max_len - tlen)), np.ones((1, tlen))], axis=1))
 
         s = torch.from_numpy(np.concatenate(s, axis=0)).to(dtype=torch.float32, device=device)
         a = torch.from_numpy(np.concatenate(a, axis=0)).to(dtype=torch.float32, device=device)
-        r1 = torch.from_numpy(np.concatenate(r1, axis=0)).to(dtype=torch.float32, device=device)
-        r2 = torch.from_numpy(np.concatenate(r2, axis=0)).to(dtype=torch.float32, device=device)
+        r = torch.from_numpy(np.concatenate(r, axis=0)).to(dtype=torch.float32, device=device)
         d = torch.from_numpy(np.concatenate(d, axis=0)).to(dtype=torch.long, device=device)
-        rtg1 = torch.from_numpy(np.concatenate(rtg1, axis=0)).to(dtype=torch.float32, device=device)
-        rtg2 = torch.from_numpy(np.concatenate(rtg2, axis=0)).to(dtype=torch.float32, device=device)
-
+        rtg = torch.from_numpy(np.concatenate(rtg, axis=0)).to(dtype=torch.float32, device=device)
         timesteps = torch.from_numpy(np.concatenate(timesteps, axis=0)).to(dtype=torch.long, device=device)
         mask = torch.from_numpy(np.concatenate(mask, axis=0)).to(device=device)
 
-        return s, a, r1,r2, d, rtg1, rtg2, timesteps, mask
+        return s, a, r, d, rtg, timesteps, mask
 
     def eval_episodes(target_rew):
         def fn(model):
@@ -184,14 +170,14 @@ def experiment(
             for _ in range(num_eval_episodes):
                 with torch.no_grad():
                     if model_type == 'dt':
-                        ret1,ret2, length = evaluate_episode_rtg(
+                        ret, length = evaluate_episode_rtg(
                             env,
                             state_dim,
                             act_dim,
                             model,
                             max_ep_len=max_ep_len,
                             scale=scale,
-                            target_return=np.divide(target_rew,scale),
+                            target_return=target_rew/scale,
                             mode=mode,
                             state_mean=state_mean,
                             state_std=state_std,
@@ -210,9 +196,8 @@ def experiment(
                             state_std=state_std,
                             device=device,
                         )
-                returns.append(ret1+ret2)
+                returns.append(ret)
                 lengths.append(length)
-
             return {
                 f'target_{target_rew}_return_mean': np.mean(returns),
                 f'target_{target_rew}_return_std': np.std(returns),
@@ -285,8 +270,9 @@ def experiment(
         wandb.init(
             name=exp_prefix,
             group=group_name,
-            project='decision-transformer',
-            config=variant
+            project='AlphaAttention - decision-transformer',
+            config=variant,
+            entity = "alphaattention"
         )
         # wandb.watch(model)  # wandb has some bug
 
@@ -298,27 +284,27 @@ def experiment(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', type=str, default='m_reward-halfcheetah')
+    parser.add_argument('--env', type=str, default='hopper')
     parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
     parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
-    parser.add_argument('--K', type=int, default=20)
+    parser.add_argument('--K', type=int, default=20) # stabilitet test her
     parser.add_argument('--pct_traj', type=float, default=1.)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--model_type', type=str, default='dt')  # dt for decision transformer, bc for behavior cloning
-    parser.add_argument('--embed_dim', type=int, default=128)
-    parser.add_argument('--n_layer', type=int, default=3)
+    parser.add_argument('--embed_dim', type=int, default=128) # stabilitet test her
+    parser.add_argument('--n_layer', type=int, default=3) # stabilitet test her testest
     parser.add_argument('--n_head', type=int, default=1)
     parser.add_argument('--activation_function', type=str, default='relu')
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
     parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
     parser.add_argument('--warmup_steps', type=int, default=10000)
-    parser.add_argument('--num_eval_episodes', type=int, default=10)
+    parser.add_argument('--num_eval_episodes', type=int, default=100)
     parser.add_argument('--max_iters', type=int, default=10)
-    parser.add_argument('--num_steps_per_iter', type=int, default=100)
+    parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
     
     args = parser.parse_args()
 
-    experiment('gym(AA)-experiment', variant=vars(args))
+    experiment('Vanilla_DT_gym-experiment', variant=vars(args))
