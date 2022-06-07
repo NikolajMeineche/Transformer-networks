@@ -126,6 +126,23 @@ export MUJOCO_PY_MJKEY_PATH=$HOME/.mujoco/mujoco200/mjkey.txt
 ````
 
 
+## Pycharm Pro error: Please add following line to .bashrc: export LD_LIBRARY_PATH=$home/pcname/.mujoco/mujoco200/bin
 
+For solving the issue you need to open .bashrc in a terminal: 
+````
+nano ~/.bashrc
+````
+And in the bottom add the following
+````
+export LD_LIBRARY_PATH=$home/pcname/.mujoco/mujoco200/bin 
+````
+Then exit the .bashrc by crtl+o press enter to save and then ctrl+x to exit
+
+Afterwards close all terminals and if you have pycharm open. 
+Then open pycharm pro through a terminal, because we will not want to open it with sudo. 
+````
+pycharm-proffesional
+````
+It should work now. 
 
 
