@@ -23,7 +23,8 @@ def discount_cumsum(x, gamma):
     return discount_cumsum
 
 
-def experiment(
+def experiment(        C_R1,
+        C_R2,
         exp_prefix,
         variant,
 ):
@@ -43,7 +44,7 @@ def experiment(
     elif env_name == 'halfcheetah':
         env = gym.make('HalfCheetah-v3')
         max_ep_len = 1000
-        env_targets = [np.array([6000,6000]), np.array([3000, 3000])]
+        env_targets = [np.array([C_R1,C_R2])] # , np.array([R1/2,R2/2])
         scale = 1000.
     elif env_name == 'walker2d':
         env = gym.make('Walker2d-v3')
@@ -295,28 +296,18 @@ def experiment(
             config=variant
         )
         # wandb.watch(model)  # wandb has some bug
-    import csv
-    i = 0
-    with open('mRewardReturns.csv', 'w', encoding='UTF8') as f:
-        writer = csv.writer(f)
-        for iter in range(variant['max_iters']):
-            outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
 
-            data = []
-            header = []
-            for k, v in outputs.items():
-                data.append(v)
-                header.append(k)
-            # write the header
-            if i == 0:
-                writer.writerow(header)
-                i += 1
-
-            # write the data
-            writer.writerow(data)
-
-        if log_to_wandb:
-            wandb.log(outputs)
+    data_all_episodes = []
+    for iter in range(variant['max_iters']):
+        outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter + 1,
+                                          print_logs=True)
+        data = np.array([])
+        header = []
+        for k, v in outputs.items():
+            data = np.append(data, v)
+            header.append(k)
+        data_all_episodes.append(data)
+    return data_all_episodes, header
 
 
 if __name__ == '__main__':
@@ -341,7 +332,49 @@ if __name__ == '__main__':
     parser.add_argument('--num_steps_per_iter', type=int, default=100)
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-    
+
     args = parser.parse_args()
 
-    experiment('Vanilla_DT_gym-experiment', variant=vars(args))
+    import csv
+    expert_performanceR1 = 3000
+    expert_performanceR2 = -500
+    n_tested_R_values = 3
+    p_min_tested_R = 0 #minimally tested R1 and R2 value
+    p_max_tested_R = 1.5
+
+
+    #For loop over constant R2, ie. with varying R1 values
+
+    i = 0
+    for R1_value in np.linspace(p_min_tested_R*expert_performanceR1, p_max_tested_R*expert_performanceR1, n_tested_R_values, endpoint=True):
+
+        with open('testR1values.csv', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+                #write the header
+            if i == 0:
+                writer.writerow(header)
+                i += 1
+            data_all_experiment, header = experiment(R1_value, expert_performanceR2, 'Vanilla_DT_gym-experiment',
+                                                     variant=vars(args))
+
+            helper_array = np.zeros(shape=(len(data_all_experiment[0])))
+            for i in range(len(data_all_experiment)):
+                helper_array += data_all_experiment[i]
+            helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
+            writer.writerow(helper_array.tolist())
+    """ 
+    i = 0
+    for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,
+                                n_tested_R_values, endpoint=True):
+        
+        with open('testR2values.csv', 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            # write the header
+            if i == 0:
+                writer.writerow(header)
+                i += 1
+            data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
+                                                     variant=vars(args))
+            for data in range(len(data_all_experiment)):
+                writer.writerow(data)
+    """
