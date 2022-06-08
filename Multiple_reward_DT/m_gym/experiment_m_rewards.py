@@ -355,13 +355,15 @@ if __name__ == '__main__':
             data_all_experiment, header = experiment(R1_value, expert_performanceR2, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
             if i == 0:
-                writer.writerow(header)
+                writer.writerow(header.append("R1"))
                 i += 1
             helper_array = np.zeros(shape=(len(data_all_experiment[0])))
             for g in range(len(data_all_experiment)):
                 helper_array += data_all_experiment[g]
             helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
-            writer.writerow(helper_array.tolist())
+            helper_list = helper_array.tolist()
+            writer.writerow(helper_list.append(R1_value))
+
 
     i = 0
     with open('testR2values.csv', 'w', encoding='UTF8') as f:
@@ -372,11 +374,12 @@ if __name__ == '__main__':
             data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
             if i == 0:
-                writer.writerow(header)
+                writer.writerow(header.append("R2"))
                 i += 1
             helper_array = np.zeros(shape=(len(data_all_experiment[0])))
             for g in range(len(data_all_experiment)):
                 helper_array += data_all_experiment[g]
             helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
-            writer.writerow(helper_array.tolist())
+            helper_list = helper_array.tolist()
+            writer.writerow(helper_list.append(R2_value))
 
