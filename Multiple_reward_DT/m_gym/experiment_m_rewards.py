@@ -180,7 +180,7 @@ def experiment(
 
     def eval_episodes(target_rew):
         def fn(model):
-            returns, lengths = [], []
+            returns, returnsR1, returnsR2, lengths = [], [], [], []
             for _ in range(num_eval_episodes):
                 with torch.no_grad():
                     if model_type == 'dt':
@@ -210,12 +210,18 @@ def experiment(
                             state_std=state_std,
                             device=device,
                         )
-                returns.append(ret1+ret2)
+                returns.append(ret1+ret2) #this is R1 + R2 not r1+r2
+                returnsR1.append(ret1)
+                returnsR2.append(ret2)
                 lengths.append(length)
 
             return {
                 f'target_{target_rew}_return_mean': np.mean(returns),
                 f'target_{target_rew}_return_std': np.std(returns),
+                f'target_{target_rew}_returnR1_mean': np.mean(returnsR1),
+                f'target_{target_rew}_returnR1_std': np.std(returnsR1),
+                f'target_{target_rew}_returnR2_mean': np.mean(returnsR2),
+                f'target_{target_rew}_returnR2_std': np.std(returnsR2),
                 f'target_{target_rew}_length_mean': np.mean(lengths),
                 f'target_{target_rew}_length_std': np.std(lengths),
             }
@@ -289,9 +295,25 @@ def experiment(
             config=variant
         )
         # wandb.watch(model)  # wandb has some bug
+    import csv
+    i = 0
+    with open('mRewardReturns.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        for iter in range(variant['max_iters']):
+            outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
 
-    for iter in range(variant['max_iters']):
-        outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
+            data = []
+            for k, v in outputs.items():
+                data.append(v)
+            header = ['R mean', 'R std', 'R1 mean', 'R1 std', 'R2 mean', 'R2 std', 'length mean', 'length std']
+            # write the header
+            if i == 0:
+                writer.writerow(header)
+                i += 1
+
+            # write the data
+            writer.writerow(data)
+
         if log_to_wandb:
             wandb.log(outputs)
 
