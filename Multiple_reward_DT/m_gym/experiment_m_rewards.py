@@ -303,9 +303,10 @@ def experiment(
             outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
 
             data = []
+            header = []
             for k, v in outputs.items():
                 data.append(v)
-            header = ['R mean', 'R std', 'R1 mean', 'R1 std', 'R2 mean', 'R2 std', 'length mean', 'length std']
+                header.append(k)
             # write the header
             if i == 0:
                 writer.writerow(header)

@@ -41,7 +41,7 @@ class Trainer:
             outputs = eval_fn(self.model)
             for k, v in outputs.items():
                 logs[f'evaluation/{k}'] = v
-        """
+
         logs['time/total'] = time.time() - self.start_time
         logs['time/evaluation'] = time.time() - eval_start
         logs['training/train_loss_mean'] = np.mean(train_losses)
@@ -54,7 +54,7 @@ class Trainer:
             print('=' * 80)
             print(f'Iteration {iter_num}')
             for k, v in logs.items():
-                print(f'{k}: {v}')"""
+                print(f'{k}: {v}')
 
         return logs
 
