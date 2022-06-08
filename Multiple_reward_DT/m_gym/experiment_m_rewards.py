@@ -346,35 +346,37 @@ if __name__ == '__main__':
     #For loop over constant R2, ie. with varying R1 values
 
     i = 0
-    for R1_value in np.linspace(p_min_tested_R*expert_performanceR1, p_max_tested_R*expert_performanceR1, n_tested_R_values, endpoint=True):
+    with open('testR1values.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        for R1_value in np.linspace(p_min_tested_R*expert_performanceR1, p_max_tested_R*expert_performanceR1, n_tested_R_values, endpoint=True):
 
-        with open('testR1values.csv', 'w', encoding='UTF8') as f:
-            writer = csv.writer(f)
                 #write the header
-            if i == 0:
-                writer.writerow(header)
-                i += 1
+
             data_all_experiment, header = experiment(R1_value, expert_performanceR2, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
-
-            helper_array = np.zeros(shape=(len(data_all_experiment[0])))
-            for i in range(len(data_all_experiment)):
-                helper_array += data_all_experiment[i]
-            helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
-            writer.writerow(helper_array.tolist())
-    """ 
-    i = 0
-    for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,
-                                n_tested_R_values, endpoint=True):
-        
-        with open('testR2values.csv', 'w', encoding='UTF8') as f:
-            writer = csv.writer(f)
-            # write the header
             if i == 0:
                 writer.writerow(header)
                 i += 1
+            helper_array = np.zeros(shape=(len(data_all_experiment[0])))
+            for g in range(len(data_all_experiment)):
+                helper_array += data_all_experiment[g]
+            helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
+            writer.writerow(helper_array.tolist())
+
+    i = 0
+    with open('testR2values.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,
+                                n_tested_R_values, endpoint=True):
+            # write the header
             data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
-            for data in range(len(data_all_experiment)):
-                writer.writerow(data)
-    """
+            if i == 0:
+                writer.writerow(header)
+                i += 1
+            helper_array = np.zeros(shape=(len(data_all_experiment[0])))
+            for g in range(len(data_all_experiment)):
+                helper_array += data_all_experiment[g]
+            helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
+            writer.writerow(helper_array.tolist())
+
