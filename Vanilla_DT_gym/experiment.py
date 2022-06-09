@@ -275,22 +275,24 @@ def experiment(
             entity = "alphaattention"
         )
         # wandb.watch(model)  # wandb has some bug
-
+    outputsList = []
     for iter in range(variant['max_iters']):
         outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
+        outputsList.append(outputs)
+
         if log_to_wandb:
             wandb.log(outputs)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', type=str, default='hopper')
-    parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
+    parser.add_argument('--env', type=str, default='HalfCheetah-v3')
+    parser.add_argument('--dataset', type=str, default='expert')  # medium, medium-replay, medium-expert, expert
     parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
     parser.add_argument('--K', type=int, default=20) # stabilitet test her
     parser.add_argument('--pct_traj', type=float, default=1.)
     parser.add_argument('--batch_size', type=int, default=64)
-    parser.add_argument('--model_type', type=str, default='dt')  # dt for decision transformer, bc for behavior cloning
+    parser.add_argument('--model_type', type=str, default='bc')  # dt for decision transformer, bc for behavior cloning
     parser.add_argument('--embed_dim', type=int, default=128) # stabilitet test her
     parser.add_argument('--n_layer', type=int, default=3) # stabilitet test her testest
     parser.add_argument('--n_head', type=int, default=1)
@@ -307,4 +309,13 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
 
-    experiment('Vanilla_DT_gym-experiment', variant=vars(args))
+    outputList = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
+    import csv
+    with open('ValuesToCalcExpectdR1R2.csv', 'w', encoding='UTF8') as f:
+        for exp in range(len(outputList)):
+            writer = csv.writer(f)
+            writer.writerow(outputList[exp])
+
+
+#how we calculate expectation values. 1 we look at expert performance and maybe change dt -> bc
+#then change the evaluation function (rtg version if dt) and lastly return the values like here

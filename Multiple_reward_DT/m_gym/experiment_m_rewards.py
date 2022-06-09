@@ -44,7 +44,7 @@ def experiment(        C_R1,
     elif env_name == 'halfcheetah':
         env = gym.make('HalfCheetah-v3')
         max_ep_len = 1000
-        env_targets = [np.array([C_R1,C_R2])] # , np.array([R1/2,R2/2])
+        env_targets = [[3000, 3000], [6000, 6000]] # , np.array([R1/2,R2/2])
         scale = 1000.
     elif env_name == 'walker2d':
         env = gym.make('Walker2d-v3')
@@ -60,7 +60,7 @@ def experiment(        C_R1,
     elif env_name == 'm_reward-halfcheetah':
         env = gym.make('HalfCheetah-v3')
         max_ep_len = 1000
-        env_targets = [[6000,6000], [3000, 3000]]
+        env_targets = [np.array([C_R1,C_R2])]
         scale = 1000.
     else:
         raise NotImplementedError
