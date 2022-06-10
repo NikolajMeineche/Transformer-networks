@@ -276,24 +276,29 @@ def experiment(
         )
         # wandb.watch(model)  # wandb has some bug
     outputsList = []
+    header = []
+    i = 0
     for iter in range(variant['max_iters']):
         outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
-        outputsList.append(outputs)
-
+        for k, v in outputs.items():
+            outputsList.append(v)
+            if i == 0:
+                header.append(k)
+                i+=1
         if log_to_wandb:
             wandb.log(outputs)
 
+    return outputsList, header
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', type=str, default='HalfCheetah-v3')
-    parser.add_argument('--dataset', type=str, default='expert')  # medium, medium-replay, medium-expert, expert
+
+    parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
     parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
-    parser.add_argument('--K', type=int, default=20) # stabilitet test her
+     # stabilitet test her
     parser.add_argument('--pct_traj', type=float, default=1.)
     parser.add_argument('--batch_size', type=int, default=64)
-    parser.add_argument('--model_type', type=str, default='bc')  # dt for decision transformer, bc for behavior cloning
-    parser.add_argument('--embed_dim', type=int, default=128) # stabilitet test her
+    parser.add_argument('--model_type', type=str, default='dt')  # dt for decision transformer, bc for behavior cloning
     parser.add_argument('--n_layer', type=int, default=3) # stabilitet test her testest
     parser.add_argument('--n_head', type=int, default=1)
     parser.add_argument('--activation_function', type=str, default='relu')
@@ -306,16 +311,66 @@ if __name__ == '__main__':
     parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-    
-    args = parser.parse_args()
 
-    outputList = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
+    parser.add_argument('--env', type=str, default='Hopper') #Hopper
+
     import csv
-    with open('ValuesToCalcExpectdR1R2.csv', 'w', encoding='UTF8') as f:
-        for exp in range(len(outputList)):
-            writer = csv.writer(f)
-            writer.writerow(outputList[exp])
+
+    dictOfExp = {"K": [], "embed_dim": [],"n_layer": []}
+
+    test_K = [1, 3, 8, 20]
+    for i in test_K: #testing context length
+        for k in range(5):
+            parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
+            parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
+            parser.add_argument('--K', type=int, default=i)  # 1, 3, 8, 20
+            args = parser.parse_args()
+            results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
+            for g in range(len(results)):
+                results[g].append(f"{g + k*10}")
+                results[g].append(f"K = {i}, iteration {k}")
+                dictOfExp["K"].append(results[g])
+
+    test_embed_dim = [32, 128]
+    for i in test_embed_dim: #testing embedding dimension
+        for k in range(5):
+
+            parser.add_argument('--K', type=int, default=20)
+            parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
+            parser.add_argument('--embed_dim', type=int, default=i)  # 128 og 32
+            args = parser.parse_args()
+            results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
+            dictOfExp["embed_dim"].append(results)
+            for g in range(len(results)):
+                results[g].append(f"{g + k*10}")
+                results[g].append(f"embed_dim = {i}, iteration {k}")
+                dictOfExp["embed_dim"].append(results)
+    test_n_layer = [1,3]
+    for i in test_n_layer: #testing number of layers of the decoder
+        for k in range(5):
+            parser.add_argument('--K', type=int, default=20)
+            parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
+            parser.add_argument('--n_layer', type=int, default=i)  # 3, 1
+            args = parser.parse_args()
+            results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
+            for g in range(len(results)):
+                results[g].append(f"{g + k*10}")
+                results[g].append(f"n_layer = {i}, iteration {k}")
+                dictOfExp["n_layer"].append(results)
+
+    with open('ReplicationValues.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        header.append("Experiment Number")
+        header.append("Experiment identifier")
+        writer.writeheader(header)
+        for k,v in dictOfExp.items():
+            for experiment in v:
+                writer.writerow(v)
+
+
+
 
 
 #how we calculate expectation values. 1 we look at expert performance and maybe change dt -> bc
-#then change the evaluation function (rtg version if dt) and lastly return the values like here
+#then change the evaluation function (rtg version if dt) to also return r2 and lastly
+#take out the csv file and manuella look through the rows and find the normal values
