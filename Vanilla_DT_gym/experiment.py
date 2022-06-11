@@ -337,7 +337,6 @@ if __name__ == '__main__':
     for i in test_embed_dim: #testing embedding dimension
         for k in range(5):
             parser = argumentParser()
-
             parser.add_argument('--K', type=int, default=20)
             parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
             parser.add_argument('--embed_dim', type=int, default=i)  # 128 og 32
@@ -348,6 +347,7 @@ if __name__ == '__main__':
                 results[g].append(f"{g + k*10}")
                 results[g].append(f"embed_dim = {i}, iteration {k}")
                 dictOfExp["embed_dim"].append(results)
+
     test_n_layer = [1,3]
     for i in test_n_layer: #testing number of layers of the decoder
         for k in range(5):
@@ -369,7 +369,7 @@ if __name__ == '__main__':
         writer.writeheader(header)
         for k,v in dictOfExp.items():
             for experiment in v:
-                writer.writerow(v)
+                writer.writerow(experiment)
 
 
 
