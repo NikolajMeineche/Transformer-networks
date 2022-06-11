@@ -280,11 +280,13 @@ def experiment(
     i = 0
     for iter in range(variant['max_iters']):
         outputs = trainer.train_iteration(num_steps=variant['num_steps_per_iter'], iter_num=iter+1, print_logs=True)
+        helper = []
         for k, v in outputs.items():
-            outputsList.append(v)
+            helper.append(v)
             if i == 0:
                 header.append(k)
                 i+=1
+        outputsList.append(helper)
         if log_to_wandb:
             wandb.log(outputs)
 
