@@ -293,29 +293,29 @@ def experiment(
     return outputsList, header
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    def argumentParser():
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
+        parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
+         # stabilitet test her
+        parser.add_argument('--pct_traj', type=float, default=1.)
+        parser.add_argument('--batch_size', type=int, default=64)
+        parser.add_argument('--model_type', type=str, default='dt')  # dt for decision transformer, bc for behavior cloning
+        parser.add_argument('--n_layer', type=int, default=3) # stabilitet test her testest
+        parser.add_argument('--n_head', type=int, default=1)
+        parser.add_argument('--activation_function', type=str, default='relu')
+        parser.add_argument('--dropout', type=float, default=0.1)
+        parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
+        parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
+        parser.add_argument('--warmup_steps', type=int, default=10000)
+        parser.add_argument('--num_eval_episodes', type=int, default=100)
+        parser.add_argument('--max_iters', type=int, default=10)
+        parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
+        parser.add_argument('--device', type=str, default='cpu')
+        parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
 
-    parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
-    parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
-     # stabilitet test her
-    parser.add_argument('--pct_traj', type=float, default=1.)
-    parser.add_argument('--batch_size', type=int, default=64)
-    parser.add_argument('--model_type', type=str, default='dt')  # dt for decision transformer, bc for behavior cloning
-    parser.add_argument('--n_layer', type=int, default=3) # stabilitet test her testest
-    parser.add_argument('--n_head', type=int, default=1)
-    parser.add_argument('--activation_function', type=str, default='relu')
-    parser.add_argument('--dropout', type=float, default=0.1)
-    parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
-    parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
-    parser.add_argument('--warmup_steps', type=int, default=10000)
-    parser.add_argument('--num_eval_episodes', type=int, default=100)
-    parser.add_argument('--max_iters', type=int, default=10)
-    parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
-    parser.add_argument('--device', type=str, default='cpu')
-    parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-
-    parser.add_argument('--env', type=str, default='Hopper') #Hopper
-
+        parser.add_argument('--env', type=str, default='Hopper') #Hopper
+        return parser
     import csv
 
     dictOfExp = {"K": [], "embed_dim": [],"n_layer": []}
@@ -323,6 +323,7 @@ if __name__ == '__main__':
     test_K = [1, 3, 8, 20]
     for i in test_K: #testing context length
         for k in range(5):
+            parser = argumentParser()
             parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
             parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
             parser.add_argument('--K', type=int, default=i)  # 1, 3, 8, 20
@@ -336,6 +337,7 @@ if __name__ == '__main__':
     test_embed_dim = [32, 128]
     for i in test_embed_dim: #testing embedding dimension
         for k in range(5):
+            parser = argumentParser()
 
             parser.add_argument('--K', type=int, default=20)
             parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
@@ -350,6 +352,8 @@ if __name__ == '__main__':
     test_n_layer = [1,3]
     for i in test_n_layer: #testing number of layers of the decoder
         for k in range(5):
+            parser = argumentParser()
+
             parser.add_argument('--K', type=int, default=20)
             parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
             parser.add_argument('--n_layer', type=int, default=i)  # 3, 1
