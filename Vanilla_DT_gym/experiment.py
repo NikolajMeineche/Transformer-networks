@@ -313,8 +313,7 @@ if __name__ == '__main__':
         parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-
-        parser.add_argument('--env', type=str, default='Hopper') #Hopper
+        parser.add_argument('--env', type=str, default='hopper') #Hopper
         return parser
     import csv
 
@@ -379,3 +378,4 @@ if __name__ == '__main__':
 #how we calculate expectation values. 1 we look at expert performance and maybe change dt -> bc
 #then change the evaluation function (rtg version if dt) to also return r2 and lastly
 #take out the csv file and manuella look through the rows and find the normal values
+
