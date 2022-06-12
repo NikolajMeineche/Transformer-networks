@@ -346,8 +346,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     import csv
-    expert_performanceR1 = 3000
-    expert_performanceR2 = -500
+    expert_performanceR1 = 5156
+    expert_performanceR2 = -386
     n_tested_R_values = 3
     p_min_tested_R = 0 #minimally tested R1 and R2 value
     p_max_tested_R = 1.5
