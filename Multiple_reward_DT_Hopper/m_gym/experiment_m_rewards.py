@@ -221,7 +221,7 @@ def experiment(        C_R1,
                             state_std=state_std,
                             device=device,
                         )
-                returns.append(ret1+ret2) #this is R1 + R2 not r1+r2
+                returns.append(ret1-ret2) #this is R1 + R2 not r1+r2
                 returnsR1.append(ret1)
                 returnsR2.append(ret2)
                 lengths.append(length)
@@ -322,7 +322,7 @@ def experiment(        C_R1,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', type=str, default='m_reward-halfcheetah')
+    parser.add_argument('--env', type=str, default='hopper')
     parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
     parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
     parser.add_argument('--K', type=int, default=20)
@@ -346,8 +346,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     import csv
-    expert_performanceR1 = 5156
-    expert_performanceR2 = -386
+    expert_performanceR1 = 5156 #replace with estimation for hopper
+    expert_performanceR2 = -386 #replace with estimation for hopper
     n_tested_R_values = 3
     p_min_tested_R = 0 #minimally tested R1 and R2 value
     p_max_tested_R = 1.5
@@ -356,7 +356,7 @@ if __name__ == '__main__':
     #For loop over constant R2, ie. with varying R1 values
 
     i = 0
-    with open('testR1values.csv', 'w', encoding='UTF8') as f:
+    with open('hopper_testR1values.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         for R1_value in np.linspace(p_min_tested_R*expert_performanceR1, p_max_tested_R*expert_performanceR1, n_tested_R_values, endpoint=True):
 
@@ -376,7 +376,7 @@ if __name__ == '__main__':
 
 
     i = 0
-    with open('testR2values.csv', 'w', encoding='UTF8') as f:
+    with open('hopper_testR2values.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,
                                 n_tested_R_values, endpoint=True):
@@ -392,4 +392,24 @@ if __name__ == '__main__':
             helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
             helper_list = helper_array.tolist()
             writer.writerow(helper_list.append(R2_value))
+
+
+
+"""
+Vi splitter op i rewards og cost abbriviated henholdsvis r1 og r2 
+
+ctrl_cost_weight = 1e-3
+healthy_reward = 1 #is always added whenever the hopper has a position/angle within the limits imposed, the environments terminate when unhealthy
+forward_reward_weight = 1 #
+
+x_velocity = (x_position_after - x_position_before) / self.dt
+forward_reward  = forward_reward_weight * x_velocity
+rewards = forward_reward + healthy_reward
+
+costs = ctrl_cost = ctrl_cost_weight * np.sum(np.square(action)) = ctrl_cost_weight*||action||^2
+
+reward = rewards - costs
+
+reward = 1*(x_position_after - x_position_before) / self.dt + 1 - 1e-3 *||action||^2
+"""
 

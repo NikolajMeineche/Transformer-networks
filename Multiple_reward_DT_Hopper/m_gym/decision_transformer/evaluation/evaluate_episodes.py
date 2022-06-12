@@ -124,7 +124,7 @@ def evaluate_episode_rtg(
         action = action.detach().cpu().numpy()
 
         state, reward, done, _ = env.step(action)
-        r2 = -np.linalg.norm(action)*1/10
+        r2 = -np.square(np.linalg.norm(action))*0.001
         r1 = reward - r2
 
 

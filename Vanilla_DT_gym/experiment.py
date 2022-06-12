@@ -313,7 +313,7 @@ if __name__ == '__main__':
         parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-        parser.add_argument('--env', type=str, default='hopper') #Hopper
+        parser.add_argument('--env', type=str, default='halfcheetah') #Hopper
         return parser
     import csv
 
@@ -366,7 +366,7 @@ if __name__ == '__main__':
         writer = csv.writer(f)
         header.append("Experiment Number")
         header.append("Experiment identifier")
-        writer.writeheader(header)
+        writer.writerow(header)
         for k,v in dictOfExp.items(): #for each experiment type ie. n_layer.... etc
             for experiment in v: #for each index of the results corrosponding to 1 row ie. 1 experiment
                 writer.writerow(experiment)

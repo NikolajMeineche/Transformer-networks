@@ -322,7 +322,7 @@ if __name__ == '__main__':
     dictOfEnv = {"hopper": [], "halfcheetah": []}
     dictOfEnvTargets = {"hopper": 3600, "halfcheetah": 12000}
 
-    for env in dictOfEnv.keys(): #testing number of layers of the decoder
+    for env in dictOfEnv.keys(): #different environments
         for targetReturn in np.linspace(0, dictOfEnvTargets[env]):
             parser = argumentParser()
             parser.add_argument('--env', type=str, default='hopper')  # Hopper
@@ -336,7 +336,7 @@ if __name__ == '__main__':
     with open('MultipleTargets.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         header.append("Experiment identifier")
-        writer.writeheader(header)
+        writer.writerow(header)
         for k,v in dictOfEnv.items():
             for experiment in v:
                 writer.writerow(experiment)
@@ -345,17 +345,5 @@ if __name__ == '__main__':
 
 
 #how hopper works reward function works:
-ctrl_cost_weight = 1e-3
-healthy_reward = 1 #is always added whenever the hopper has a position/angle within the limits imposed, the environments terminate when unhealthy
-forward_reward_weight = 1 #
 
-x_velocity = (x_position_after - x_position_before) / self.dt
-forward_reward  = forward_reward_weight * x_velocity
-rewards = forward_reward + healthy_reward
-
-costs = ctrl_cost = ctrl_cost_weight * np.sum(np.square(action)) = ctrl_cost_weight*||action||^2
-
-reward = rewards - costs
-
-reward = 1*(x_position_after - x_position_before) / self.dt + 1 - 1e-3 *||action||^2
 
