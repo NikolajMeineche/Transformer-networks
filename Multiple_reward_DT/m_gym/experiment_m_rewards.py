@@ -78,15 +78,21 @@ def experiment(        C_R1,
 
     # save all path information into separate lists
     mode = variant.get('mode', 'normal')
-    states, traj_lens, returns = [], [], []
+    states, traj_lens, returns, returns1,returns2 = [], [], [], [], []
     for path in trajectories:
         if mode == 'delayed':  # delayed: all rewards moved to end of trajectory
+            path['r1'][-1] = path['r2'].sum()
+            path['r1'][:-1] = 0.
+            path['r2'][-1] = path['r2'].sum()
+            path['r2'][:-1] = 0.
             path['rewards'][-1] = path['rewards'].sum()
             path['rewards'][:-1] = 0.
         states.append(path['observations'])
         traj_lens.append(len(path['observations']))
         returns.append(path['rewards'].sum())
-    traj_lens, returns = np.array(traj_lens), np.array(returns)
+        returns1.append(path['r1'].sum())
+        returns2.append(path['r2'].sum())
+    traj_lens, returns, returns1, returns2 = np.array(traj_lens), np.array(returns), np.array(returns1),np.array(returns2)
 
     # used for input normalization
     states = np.concatenate(states, axis=0)
@@ -98,6 +104,8 @@ def experiment(        C_R1,
     print(f'Starting new experiment: {env_name} {dataset}')
     print(f'{len(traj_lens)} trajectories, {num_timesteps} timesteps found')
     print(f'Average return: {np.mean(returns):.2f}, std: {np.std(returns):.2f}')
+    print(f'Average return1: {np.mean(returns1):.2f}, std: {np.std(returns1):.2f}')
+    print(f'Average return2: {np.mean(returns2):.2f}, std: {np.std(returns2):.2f}')
     print(f'Max return: {np.max(returns):.2f}, min: {np.min(returns):.2f}')
     print('=' * 50)
 
@@ -109,6 +117,8 @@ def experiment(        C_R1,
     # only train on top pct_traj trajectories (for %BC experiment)
     num_timesteps = max(int(pct_traj*num_timesteps), 1)
     sorted_inds = np.argsort(returns)  # lowest to highest
+    #sorted_inds1 = np.argsort(returns1)
+    #sorted_inds2 = np.argsort(returns2)
     num_trajectories = 1
     timesteps = traj_lens[sorted_inds[-1]]
     ind = len(trajectories) - 2
@@ -145,8 +155,8 @@ def experiment(        C_R1,
                 d.append(traj['dones'][si:si + max_len].reshape(1, -1))
             timesteps.append(np.arange(si, si + s[-1].shape[1]).reshape(1, -1))
             timesteps[-1][timesteps[-1] >= max_ep_len] = max_ep_len-1  # padding cutoff
-            rtg1.append(discount_cumsum(traj['rewards'][si:], gamma=1.)[:s[-1].shape[1] + 1].reshape(1, -1, 1))
-            rtg2.append(discount_cumsum(traj['rewards'][si:], gamma=1.)[:s[-1].shape[1] + 1].reshape(1, -1, 1))
+            rtg1.append(discount_cumsum(traj['r1'][si:], gamma=1.)[:s[-1].shape[1] + 1].reshape(1, -1, 1))
+            rtg2.append(discount_cumsum(traj['r2'][si:], gamma=1.)[:s[-1].shape[1] + 1].reshape(1, -1, 1))
 
             if rtg1[-1].shape[1] <= s[-1].shape[1]:
                 rtg1[-1] = np.concatenate([rtg1[-1], np.zeros((1, 1, 1))], axis=1)
