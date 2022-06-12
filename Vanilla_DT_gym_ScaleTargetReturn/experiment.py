@@ -344,8 +344,18 @@ if __name__ == '__main__':
 
 
 
+#how hopper works reward function works:
+ctrl_cost_weight = 1e-3
+healthy_reward = 1 #is always added whenever the hopper has a position/angle within the limits imposed, the environments terminate when unhealthy
+forward_reward_weight = 1 #
 
-#how we calculate expectation values. 1 we look at expert performance and maybe change dt -> bc
-#then change the evaluation function (rtg version if dt) to also return r2 and lastly
-#take out the csv file and manuella look through the rows and find the normal values
+x_velocity = (x_position_after - x_position_before) / self.dt
+forward_reward  = forward_reward_weight * x_velocity
+rewards = forward_reward + healthy_reward
+
+costs = ctrl_cost = ctrl_cost_weight * np.sum(np.square(action)) = ctrl_cost_weight*||action||^2
+
+reward = rewards - costs
+
+reward = 1*(x_position_after - x_position_before) / self.dt + 1 - 1e-3 *||action||^2
 
