@@ -221,7 +221,7 @@ def experiment(        C_R1,
                             state_std=state_std,
                             device=device,
                         )
-                returns.append(ret1-ret2) #this is R1 + R2 not r1+r2
+                returns.append(ret1+ret2) #this is R1 + R2 not r1+r2
                 returnsR1.append(ret1)
                 returnsR2.append(ret2)
                 lengths.append(length)
