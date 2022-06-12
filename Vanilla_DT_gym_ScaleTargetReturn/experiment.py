@@ -327,7 +327,6 @@ if __name__ == '__main__':
             parser = argumentParser()
             parser.add_argument('--env', type=str, default='hopper')  # Hopper
             parser.add_argument('--return', type=str, default=targetReturn)  # Hopper
-
             args = parser.parse_args()
             results, header = experiment('Vanilla_DT_gym_ScaleTargetReturn-experiment', variant=vars(args))
             for g in range(len(results)):
