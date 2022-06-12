@@ -39,12 +39,12 @@ def experiment(
     if env_name == 'hopper':
         env = gym.make('Hopper-v3')
         max_ep_len = 1000
-        env_targets = [3600, 1800]  # evaluation conditioning targets
+        env_targets = [variant['return']]  # evaluation conditioning targets
         scale = 1000.  # normalization for rewards/returns
     elif env_name == 'halfcheetah':
         env = gym.make('HalfCheetah-v3')
         max_ep_len = 1000
-        env_targets = [12000, 6000]
+        env_targets = [variant['return']]
         scale = 1000.
     elif env_name == 'walker2d':
         env = gym.make('Walker2d-v3')
@@ -295,7 +295,7 @@ def experiment(
 if __name__ == '__main__':
     def argumentParser():
         parser = argparse.ArgumentParser()
-        parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
+        parser.add_argument('--dataset', type=str, default='medium-replay')  # medium, medium-replay, medium-expert, expert
         parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
          # stabilitet test her
         parser.add_argument('--pct_traj', type=float, default=1.)
@@ -313,62 +313,33 @@ if __name__ == '__main__':
         parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-        parser.add_argument('--env', type=str, default='hopper') #Hopper
+        parser.add_argument('--K', type=int, default=20)
+        parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
+        parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
         return parser
     import csv
 
-    dictOfExp = {"K": [], "embed_dim": [],"n_layer": []}
+    dictOfEnv = {"hopper": [], "halfcheetah": []}
+    dictOfEnvTargets = {"hopper": 3600, "halfcheetah": 12000}
 
-    test_K = [1, 3, 8, 20]
-    for i in test_K: #testing context length
-        for k in range(5):
+    for env in dictOfEnv.keys(): #testing number of layers of the decoder
+        for targetReturn in np.linspace(0, dictOfEnvTargets[env]):
             parser = argumentParser()
-            parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
-            parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
-            parser.add_argument('--K', type=int, default=i)  # 1, 3, 8, 20
-            args = parser.parse_args()
-            results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
-            for g in range(len(results)):
-                results[g].append(f"{g + k*10}")
-                results[g].append(f"K = {i}, iteration {k}")
-                dictOfExp["K"].append(results[g])
+            parser.add_argument('--env', type=str, default='hopper')  # Hopper
+            parser.add_argument('--return', type=str, default=targetReturn)  # Hopper
 
-    test_embed_dim = [32, 128]
-    for i in test_embed_dim: #testing embedding dimension
-        for k in range(5):
-            parser = argumentParser()
-            parser.add_argument('--K', type=int, default=20)
-            parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
-            parser.add_argument('--embed_dim', type=int, default=i)  # 128 og 32
             args = parser.parse_args()
-            results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
-            dictOfExp["embed_dim"].append(results)
+            results, header = experiment('Vanilla_DT_gym_ScaleTargetReturn-experiment', variant=vars(args))
             for g in range(len(results)):
-                results[g].append(f"{g + k*10}")
-                results[g].append(f"embed_dim = {i}, iteration {k}")
-                dictOfExp["embed_dim"].append(results[g])
+                results[g].append(f"environment = {env}, target = {targetReturn}")
+                dictOfEnv[env].append(results[g])
 
-    test_n_layer = [1,3]
-    for i in test_n_layer: #testing number of layers of the decoder
-        for k in range(5):
-            parser = argumentParser()
-            parser.add_argument('--K', type=int, default=20)
-            parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
-            parser.add_argument('--n_layer', type=int, default=i)  # 3, 1
-            args = parser.parse_args()
-            results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
-            for g in range(len(results)):
-                results[g].append(f"{g + k*10}")
-                results[g].append(f"n_layer = {i}, iteration {k}")
-                dictOfExp["n_layer"].append(results[g])
-
-    with open('ReplicationValues.csv', 'w', encoding='UTF8') as f:
+    with open('MultipleTargets.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        header.append("Experiment Number")
         header.append("Experiment identifier")
         writer.writeheader(header)
-        for k,v in dictOfExp.items(): #for each experiment type ie. n_layer.... etc
-            for experiment in v: #for each index of the results corrosponding to 1 row ie. 1 experiment
+        for k,v in dictOfEnv.items():
+            for experiment in v:
                 writer.writerow(experiment)
 
 
