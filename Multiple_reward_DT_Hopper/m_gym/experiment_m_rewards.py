@@ -36,10 +36,10 @@ def experiment(        C_R1,
     group_name = f'{exp_prefix}-{env_name}-{dataset}'
     exp_prefix = f'{group_name}-{random.randint(int(1e5), int(1e6) - 1)}'
 
-    if env_name == 'hopper':
+    if env_name == 'm_reward-hopper':
         env = gym.make('Hopper-v3')
         max_ep_len = 1000
-        env_targets = [3600, 1800]  # evaluation conditioning targets
+        env_targets = [np.array([C_R1,C_R2])]  # evaluation conditioning targets
         scale = 1000.  # normalization for rewards/returns
     elif env_name == 'halfcheetah':
         env = gym.make('HalfCheetah-v3')
@@ -322,7 +322,7 @@ def experiment(        C_R1,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', type=str, default='hopper')
+    parser.add_argument('--env', type=str, default='m_reward-hopper')
     parser.add_argument('--dataset', type=str, default='medium')  # medium, medium-replay, medium-expert, expert
     parser.add_argument('--mode', type=str, default='normal')  # normal for standard setting, delayed for sparse
     parser.add_argument('--K', type=int, default=20)
