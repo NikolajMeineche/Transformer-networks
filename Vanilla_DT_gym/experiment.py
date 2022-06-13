@@ -310,10 +310,10 @@ if __name__ == '__main__':
         parser.add_argument('--warmup_steps', type=int, default=10000)
         parser.add_argument('--num_eval_episodes', type=int, default=100)
         parser.add_argument('--max_iters', type=int, default=10)
-        parser.add_argument('--num_steps_per_iter', type=int, default=10000) # 10000 original
+        parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-        parser.add_argument('--env', type=str, default='hopper') #Hopper
+        parser.add_argument('--env', type=str, default='halfcheetah') #Hopper
         return parser
     import csv
 
@@ -329,8 +329,8 @@ if __name__ == '__main__':
             args = parser.parse_args()
             results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
             for g in range(len(results)):
+                results[g].append(f"iteration = {g}")
                 results[g].append(f"K = {i}")
-                results[g].append(f"{g}")
                 dictOfExp["K"].append(results[g])
 
     test_embed_dim = [32, 128]
@@ -343,8 +343,8 @@ if __name__ == '__main__':
             args = parser.parse_args()
             results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
             for g in range(len(results)):
-                results[g].append(f"embed_dim  = {i}")
-                results[g].append(f"{g}")
+                results[g].append(f"iteration = {g}")
+                results[g].append(f"embed_dim = {i}")
                 dictOfExp["embed_dim"].append(results[g])
 
     test_n_layer = [1,3]
@@ -357,14 +357,14 @@ if __name__ == '__main__':
             args = parser.parse_args()
             results, header = experiment('Vanilla_DT_gym-experiment', variant=vars(args))
             for g in range(len(results)):
+                results[g].append(f"iteration = {g}")
                 results[g].append(f"n_layer = {i}")
-                results[g].append(f"{g}")
                 dictOfExp["n_layer"].append(results[g])
 
     with open('ReplicationValues.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        header.append("Variable iterated over")
-        header.append("Iteration")
+        header.append("iteration")
+        header.append("Experiment identifier")
         writer.writerow(header)
         for k,v in dictOfExp.items(): #for each experiment type ie. n_layer.... etc
             for experiment in v: #for each index of the results corrosponding to 1 row ie. 1 experiment
