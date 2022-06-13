@@ -1,21 +1,19 @@
 import seaborn as sns
-import pandas
+import pandas as pd
 import matplotlib.pyplot as plt
 
-csv = pandas.read_csv(r'C:\Users\Bbjar\OneDrive\Skrivebord\tranformers02466\GitHub\Multiple_reward_DT\m_gym\decision_transformer\mRewardReturns.csv')
-#evaluation/target_[6000, 6000]_returnR2_std
-print("hey")
+df = pd.read_csv(r'/home/adrian/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
+#pd.concat([df[[0]], df[15].str.split(', ', expand=True)], axis=1)
 
+
+df.columns = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"]
+print(df)
 #yname = "evaluation/target_[6000, 6000]_returnR1_mean"
-xname = "evaluation/target_[6000, 6000]_returnR_mean"
+xname = "Iterations"
 yname = "evaluation/target_[6000, 6000]_returnR2_std"
-xname = "evaluation/target_[6000, 6000]_returnR1_mean"
-xname = "evaluation/target_[6000, 6000]_returnR2_mean"
+Hue = "Identifier"
 
-
-res = sns.lineplot(x=xname, y=yname, data=csv)
-res1 = sns.lineplot(x=xname, y=yname, data=csv)
-res2 = sns.lineplot(x=xname, y=yname, data=csv)
+sns.lineplot(data=fmri, x="timepoint", y="signal", hue=Hue, style="event")
 
 plt.show()
 

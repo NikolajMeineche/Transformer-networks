@@ -285,8 +285,8 @@ def experiment(
             helper.append(v)
             if i == 0:
                 header.append(k)
-                i+=1
         outputsList.append(helper)
+        i += 1
         if log_to_wandb:
             wandb.log(outputs)
 
@@ -307,13 +307,13 @@ if __name__ == '__main__':
         parser.add_argument('--dropout', type=float, default=0.1)
         parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
         parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
-        parser.add_argument('--warmup_steps', type=int, default=10000)
+        parser.add_argument('--warmup_steps', type=int, default=10)#10000
         parser.add_argument('--num_eval_episodes', type=int, default=100)
-        parser.add_argument('--max_iters', type=int, default=10)
-        parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
+        parser.add_argument('--max_iters', type=int, default=1)
+        parser.add_argument('--num_steps_per_iter', type=int, default=1) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-        parser.add_argument('--env', type=str, default='halfcheetah') #Hopper
+        parser.add_argument('--env', type=str, default='hopper') #Hopper
         return parser
     import csv
 
@@ -337,6 +337,7 @@ if __name__ == '__main__':
     for i in test_embed_dim: #testing embedding dimension
         for k in range(5):
             parser = argumentParser()
+
             parser.add_argument('--K', type=int, default=20)
             parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
             parser.add_argument('--embed_dim', type=int, default=i)  # 128 og 32
@@ -366,10 +367,10 @@ if __name__ == '__main__':
         writer = csv.writer(f)
         header.append("Experiment Number")
         header.append("Experiment identifier")
-        writer.writerow(header)
-        for k,v in dictOfExp.items(): #for each experiment type ie. n_layer.... etc
-            for experiment in v: #for each index of the results corrosponding to 1 row ie. 1 experiment
-                writer.writerow(experiment)
+        writer.writeheader(header)
+        for k,v in dictOfExp.items():
+            for experiment in v:
+                writer.writerow(v)
 
 
 
