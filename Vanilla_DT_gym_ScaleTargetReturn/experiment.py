@@ -285,7 +285,7 @@ def experiment(
             helper.append(v)
             if i == 0:
                 header.append(k)
-            i+=1
+        i+=1
         outputsList.append(helper)
         if log_to_wandb:
             wandb.log(outputs)
