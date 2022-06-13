@@ -7,7 +7,7 @@ import pickle
 def splitreward(env, datatype):
     name = f'{env}-{datatype}-v2.pkl'
     data = pd.read_pickle(f'{name}')
-    konstant = -1/10
+    konstant = -1/1000
     for traj in range(len(data)):
         r_forward = []
         r_control = []
@@ -25,4 +25,4 @@ def splitreward(env, datatype):
     with open(f'{n}-{name}', 'wb') as f:
         pickle.dump(data, f)
 
-#splitreward('halfcheetah','medium')
+splitreward('hopper','medium')

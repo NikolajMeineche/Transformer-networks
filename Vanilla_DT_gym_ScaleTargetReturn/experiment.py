@@ -323,7 +323,7 @@ if __name__ == '__main__':
     dictOfEnvTargets = {"hopper": 3600, "halfcheetah": 12000}
 
     for env in dictOfEnv.keys(): #different environments
-        for targetReturn in np.linspace(0, dictOfEnvTargets[env]):
+        for targetReturn in np.linspace(0, dictOfEnvTargets[env], 10):
             parser = argumentParser()
             parser.add_argument('--env', type=str, default='hopper')  # Hopper
             parser.add_argument('--return', type=str, default=targetReturn)  # Hopper

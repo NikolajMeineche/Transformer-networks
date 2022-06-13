@@ -337,9 +337,9 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
     parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
     parser.add_argument('--warmup_steps', type=int, default=10000)
-    parser.add_argument('--num_eval_episodes', type=int, default=10)
+    parser.add_argument('--num_eval_episodes', type=int, default=100)
     parser.add_argument('--max_iters', type=int, default=10)
-    parser.add_argument('--num_steps_per_iter', type=int, default=100)
+    parser.add_argument('--num_steps_per_iter', type=int, default=10000)
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
 
@@ -348,7 +348,7 @@ if __name__ == '__main__':
     import csv
     expert_performanceR1 = 5156 #replace with estimation for hopper
     expert_performanceR2 = -386 #replace with estimation for hopper
-    n_tested_R_values = 3
+    n_tested_R_values = 15#use 15
     p_min_tested_R = 0 #minimally tested R1 and R2 value
     p_max_tested_R = 1.5
 
@@ -365,14 +365,16 @@ if __name__ == '__main__':
             data_all_experiment, header = experiment(R1_value, expert_performanceR2, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
             if i == 0:
-                writer.writerow(header.append("R1"))
+                header.append("R1")
+                writer.writerow(header)
                 i += 1
             helper_array = np.zeros(shape=(len(data_all_experiment[0])))
             for g in range(len(data_all_experiment)):
                 helper_array += data_all_experiment[g]
             helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
             helper_list = helper_array.tolist()
-            writer.writerow(helper_list.append(R1_value))
+            helper_list.append(R1_value)
+            writer.writerow(helper_list)
 
 
     i = 0
@@ -384,14 +386,16 @@ if __name__ == '__main__':
             data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
             if i == 0:
-                writer.writerow(header.append("R2"))
+                header.append("R2")
+                writer.writerow(header)
                 i += 1
             helper_array = np.zeros(shape=(len(data_all_experiment[0])))
             for g in range(len(data_all_experiment)):
                 helper_array += data_all_experiment[g]
             helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
             helper_list = helper_array.tolist()
-            writer.writerow(helper_list.append(R2_value))
+            helper_list.append(R2_value)
+            writer.writerow(helper_list)
 
 
 
