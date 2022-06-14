@@ -1,8 +1,8 @@
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
-
-pc_name = 'johannefranck'
+sns.set_theme()
+pc_name = 'adrian'
 
 #######################K-values#####################
 df = pd.read_csv(r'/home/'+str(pc_name)+'/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
