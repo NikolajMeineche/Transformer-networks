@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #######################K-values#####################
-df = pd.read_csv(r'/home/adrian/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
+df = pd.read_csv(r'/home/johannefranck/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
 
 df = df[ (df['Variable iterated over'] == "K = 1") | (df['Variable iterated over'] == "K = 3")| (df['Variable iterated over'] == "K = 8")| (df['Variable iterated over'] == "K = 20")]
 
@@ -16,7 +16,7 @@ plt.show()
 
 #######################embed_dim -values#####################
 
-df = pd.read_csv(r'/home/adrian/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
+df = pd.read_csv(r'/home/johannefranck/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
 
 df = df[ (df['Variable iterated over'] == "embed_dim  = 32") | (df['Variable iterated over'] == "embed_dim  = 128")]
 
@@ -29,7 +29,7 @@ plt.show()
 
 #######################n_layer -values#####################
 
-df = pd.read_csv(r'/home/adrian/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
+df = pd.read_csv(r'/home/johannefranck/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
 
 df = df[ (df['Variable iterated over'] == "n_layer = 1") | (df['Variable iterated over'] == "n_layer = 3")]
 
