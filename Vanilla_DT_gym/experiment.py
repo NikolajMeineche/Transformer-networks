@@ -310,7 +310,7 @@ if __name__ == '__main__':
         parser.add_argument('--warmup_steps', type=int, default=10000)
         parser.add_argument('--num_eval_episodes', type=int, default=100)
         parser.add_argument('--max_iters', type=int, default=10)
-        parser.add_argument('--num_steps_per_iter', type=int, default=1) # 10000 original
+        parser.add_argument('--num_steps_per_iter', type=int, default=10000) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
         parser.add_argument('--env', type=str, default='hopper') #Hopper

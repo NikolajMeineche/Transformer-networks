@@ -310,7 +310,7 @@ if __name__ == '__main__':
         parser.add_argument('--warmup_steps', type=int, default=10000)
         parser.add_argument('--num_eval_episodes', type=int, default=100)
         parser.add_argument('--max_iters', type=int, default=10)
-        parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
+        parser.add_argument('--num_steps_per_iter', type=int, default=10000) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
         parser.add_argument('--K', type=int, default=20)
@@ -319,13 +319,14 @@ if __name__ == '__main__':
         return parser
     import csv
 
-    dictOfEnv = {"hopper": [], "halfcheetah": []}
-    dictOfEnvTargets = {"hopper": 3600, "halfcheetah": 12000}
+    #dictOfEnv = {"hopper": [], "halfcheetah": []}
+    dictOfEnv = { "halfcheetah": []}
+    #dictOfEnvTargets = {"hopper": 3600, "halfcheetah": 12000}
 
     for env in dictOfEnv.keys(): #different environments
-        for targetReturn in np.linspace(0, dictOfEnvTargets[env], 10):
+        for targetReturn in np.array([0,1333]):
             parser = argumentParser()
-            parser.add_argument('--env', type=str, default='hopper')  # Hopper
+            parser.add_argument('--env', type=str, default='halfcheetah')  # Hopper
             parser.add_argument('--return', type=str, default=targetReturn)  # Hopper
             args = parser.parse_args()
             results, header = experiment('Vanilla_DT_gym_ScaleTargetReturn-experiment', variant=vars(args))
@@ -333,7 +334,7 @@ if __name__ == '__main__':
                 results[g].append(f"environment = {env}, target = {targetReturn}")
                 dictOfEnv[env].append(results[g])
 
-    with open('MultipleTargets.csv', 'w', encoding='UTF8') as f:
+    with open('MultipleTargetsHalfcheetah01333.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         header.append("Experiment identifier")
         writer.writerow(header)
