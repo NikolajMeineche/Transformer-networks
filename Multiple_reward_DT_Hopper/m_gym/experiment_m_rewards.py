@@ -336,19 +336,19 @@ if __name__ == '__main__':
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
     parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
-    parser.add_argument('--warmup_steps', type=int, default=10000)
-    parser.add_argument('--num_eval_episodes', type=int, default=100)
-    parser.add_argument('--max_iters', type=int, default=10)
-    parser.add_argument('--num_steps_per_iter', type=int, default=10000)
+    parser.add_argument('--warmup_steps', type=int, default=1)#10000
+    parser.add_argument('--num_eval_episodes', type=int, default=1)#100
+    parser.add_argument('--max_iters', type=int, default=1)#10
+    parser.add_argument('--num_steps_per_iter', type=int, default=1)#10000
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
 
     args = parser.parse_args()
 
     import csv
-    expert_performanceR1 = 5156 #replace with estimation for hopper
-    expert_performanceR2 = -386 #replace with estimation for hopper
-    n_tested_R_values = 15#use 15
+    expert_performanceR1 = 1422.63 #replace with estimation for hopper
+    expert_performanceR2 = -0.57 #replace with estimation for hopper
+    n_tested_R_values = 10#use 15
     p_min_tested_R = 0 #minimally tested R1 and R2 value
     p_max_tested_R = 1.5
 
@@ -358,9 +358,10 @@ if __name__ == '__main__':
     i = 0
     with open('hopper_testR1values.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        for R1_value in np.linspace(p_min_tested_R*expert_performanceR1, p_max_tested_R*expert_performanceR1, n_tested_R_values, endpoint=True):
+        for R1_value in [   0.   ,  237.105,  474.21 ,  711.315,  948.42 , 1185.525, 1422.63 , 1659.735, 1896.84 , 2133.945]:
+        #for R1_value in np.linspace(p_min_tested_R * expert_performanceR1, p_max_tested_R * expert_performanceR1,n_tested_R_values, endpoint=True):
 
-                #write the header
+            #write the header
 
             data_all_experiment, header = experiment(R1_value, expert_performanceR2, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
@@ -380,8 +381,8 @@ if __name__ == '__main__':
     i = 0
     with open('hopper_testR2values.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,
-                                n_tested_R_values, endpoint=True):
+        for R2_value in [   0.   ,  237.105,  474.21 ,  711.315,  948.42 , 1185.525, 1422.63 , 1659.735, 1896.84 , 2133.945]:
+        #for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,n_tested_R_values, endpoint=True):
             # write the header
             data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
