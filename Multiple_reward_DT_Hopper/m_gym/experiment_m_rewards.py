@@ -363,7 +363,7 @@ if __name__ == '__main__':
 
             #write the header
 
-            data_all_experiment, header = experiment(R1_value, expert_performanceR2, 'Vanilla_DT_gym-experiment',
+            data_all_experiment, header = experiment(R1_value, expert_performanceR2, 'Original_DT_gym-experiment',
                                                      variant=vars(args))
             if i == 0:
                 header.append("R1")
@@ -379,7 +379,7 @@ if __name__ == '__main__':
         for R2_value in [   0.   ,  237.105,  474.21 ,  711.315,  948.42 , 1185.525, 1422.63 , 1659.735, 1896.84 , 2133.945]:
         #for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,n_tested_R_values, endpoint=True):
             # write the header
-            data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
+            data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Original_DT_gym-experiment',
                                                      variant=vars(args))
             if i == 0:
                 header.append("R2")

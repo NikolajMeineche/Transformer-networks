@@ -1,4 +1,4 @@
-name: decision-transformer-Vanilla_DT_gym
+name: decision-transformer-Original_DT_gym
 channels:
 - pytorch
 dependencies:
@@ -8,7 +8,7 @@ dependencies:
 - numpy
 - pip
 - pip:
-  - Vanilla_DT_gym==0.18.3
+  - Original_DT_gym==0.18.3
   - mujoco-py==2.0.2.13
   - numpy==1.20.3
   - torch==1.8.1
