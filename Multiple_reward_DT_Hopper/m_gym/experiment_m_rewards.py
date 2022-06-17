@@ -81,7 +81,7 @@ def experiment(        C_R1,
     states, traj_lens, returns, returns1,returns2 = [], [], [], [], []
     for path in trajectories:
         if mode == 'delayed':  # delayed: all rewards moved to end of trajectory
-            path['r1'][-1] = path['r2'].sum()
+            path['r1'][-1] = path['r1'].sum()
             path['r1'][:-1] = 0.
             path['r2'][-1] = path['r2'].sum()
             path['r2'][:-1] = 0.
@@ -336,9 +336,9 @@ if __name__ == '__main__':
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)
     parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
-    parser.add_argument('--warmup_steps', type=int, default=1)#10000
-    parser.add_argument('--num_eval_episodes', type=int, default=1)#100
-    parser.add_argument('--max_iters', type=int, default=1)#10
+    parser.add_argument('--warmup_steps', type=int, default=10000)#10000
+    parser.add_argument('--num_eval_episodes', type=int, default=100)#100
+    parser.add_argument('--max_iters', type=int, default=10)#10
     parser.add_argument('--num_steps_per_iter', type=int, default=1)#10000
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
@@ -356,9 +356,9 @@ if __name__ == '__main__':
     #For loop over constant R2, ie. with varying R1 values
 
     i = 0
-    with open('hopper_testR1values.csv', 'w', encoding='UTF8') as f:
+    with open('hopper_testR1values1422.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        for R1_value in [   0.   ,  237.105,  474.21 ,  711.315,  948.42 , 1185.525, 1422.63 , 1659.735, 1896.84 , 2133.945]:
+        for R1_value in np.array([1422.63]):
         #for R1_value in np.linspace(p_min_tested_R * expert_performanceR1, p_max_tested_R * expert_performanceR1,n_tested_R_values, endpoint=True):
 
             #write the header
@@ -369,15 +369,10 @@ if __name__ == '__main__':
                 header.append("R1")
                 writer.writerow(header)
                 i += 1
-            helper_array = np.zeros(shape=(len(data_all_experiment[0])))
-            for g in range(len(data_all_experiment)):
-                helper_array += data_all_experiment[g]
-            helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
-            helper_list = helper_array.tolist()
-            helper_list.append(R1_value)
-            writer.writerow(helper_list)
+            for i in range(len(data_all_experiment)):
+                writer.writerow(data_all_experiment[i])
 
-
+"""
     i = 0
     with open('hopper_testR2values.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -399,7 +394,7 @@ if __name__ == '__main__':
             writer.writerow(helper_list)
 
 
-
+"""
 """
 Vi splitter op i rewards og cost abbriviated henholdsvis r1 og r2 
 

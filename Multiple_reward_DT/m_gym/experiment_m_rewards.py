@@ -81,7 +81,7 @@ def experiment(        C_R1,
     states, traj_lens, returns, returns1,returns2 = [], [], [], [], []
     for path in trajectories:
         if mode == 'delayed':  # delayed: all rewards moved to end of trajectory
-            path['r1'][-1] = path['r2'].sum()
+            path['r1'][-1] = path['r1'].sum()
             path['r1'][:-1] = 0.
             path['r2'][-1] = path['r2'].sum()
             path['r2'][:-1] = 0.
@@ -356,9 +356,9 @@ if __name__ == '__main__':
     #For loop over constant R2, ie. with varying R1 values
 
     i = 0
-    with open('testR1values.csv', 'w', encoding='UTF8') as f:
+    with open('m_cheetah_R1values5156.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        for R1_value in np.linspace(p_min_tested_R*expert_performanceR1, p_max_tested_R*expert_performanceR1, n_tested_R_values, endpoint=True):
+        for R1_value in np.array([5156]):
 
                 #write the header
 
@@ -368,16 +368,10 @@ if __name__ == '__main__':
                 header.append("R1")
                 writer.writerow(header)
                 i += 1
-            helper_array = np.zeros(shape=(len(data_all_experiment[0])))
-            for g in range(len(data_all_experiment)):
-                helper_array += data_all_experiment[g]
-            helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
-            helper_list = helper_array.tolist()
-            helper_list.append(R1_value)
-            writer.writerow(helper_list)
+            for i in range(len(data_all_experiment)):
+                writer.writerow(data_all_experiment[i])
 
-
-
+    """
     i = 0
     with open('testR2values.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -390,11 +384,6 @@ if __name__ == '__main__':
                 header.append("R2")
                 writer.writerow(header)
                 i += 1
-            helper_array = np.zeros(shape=(len(data_all_experiment[0])))
-            for g in range(len(data_all_experiment)):
-                helper_array += data_all_experiment[g]
-            helper_array = np.divide(helper_array, len(data_all_experiment)) #gennemsnitlig performance over alle eksperimenter
-            helper_list = helper_array.tolist()
-            helper_list.append(R2_value)
-            writer.writerow(helper_list)
-
+            for i in range(len(data_all_experiment)):
+                writer.writerow(data_all_experiment[i])
+    """
