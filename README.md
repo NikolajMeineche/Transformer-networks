@@ -1,4 +1,4 @@
-# Multi-objective reinforcment learning using transformer networks
+# Multi-objective reinforcement learning using transformer networks
 By Adrian Valentin Kragh-Hillers (s201390@student.dtu.dk), Johanne Christine Arboe Franck (s2040888@student.dtu.dk), Nikolaj Bach Meineche (s204103@student.dtu.dk), Bjarke Lars Verner Bruhn Erichsen (s204104@student.dtu.dk) as a project in course 02466.
 
 ## Overview
