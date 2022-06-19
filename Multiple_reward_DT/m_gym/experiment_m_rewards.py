@@ -338,7 +338,7 @@ if __name__ == '__main__':
     parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
     parser.add_argument('--warmup_steps', type=int, default=10000)
     parser.add_argument('--num_eval_episodes', type=int, default=100)
-    parser.add_argument('--max_iters', type=int, default=10)
+    parser.add_argument('--max_iters', type=int, default=1)
     parser.add_argument('--num_steps_per_iter', type=int, default=10000)
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
@@ -371,12 +371,13 @@ if __name__ == '__main__':
             for i in range(len(data_all_experiment)):
                 writer.writerow(data_all_experiment[i])
 
-    """
+
     i = 0
-    with open('testR2values.csv', 'w', encoding='UTF8') as f:
+    with open('newtestR2values2.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,
-                                n_tested_R_values, endpoint=True):
+        for R2_value in [ -64.33333333]:#[0, -64.33333333 , -128.66666667, -193.]:        ,
+#-257.33333333, -321.66666667, -386.        , -450.33333333,
+#-514.66666667, -579.        ]]:
             # write the header
             data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
                                                      variant=vars(args))
@@ -386,4 +387,4 @@ if __name__ == '__main__':
                 i += 1
             for i in range(len(data_all_experiment)):
                 writer.writerow(data_all_experiment[i])
-    """
+

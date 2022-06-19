@@ -2,7 +2,7 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv(r'/home/adrian/PycharmProjects/Transformer-networks/Vanilla_DT_gym/ReplicationValues.csv')
+df = pd.read_csv(r'/Vanilla_DT_gym/budgetnlayer5.csv')
 #pd.concat([df[[0]], df[15].str.split(', ', expand=True)], axis=1)
 
 

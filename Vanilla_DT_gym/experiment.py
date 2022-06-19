@@ -309,19 +309,20 @@ if __name__ == '__main__':
         parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
         parser.add_argument('--warmup_steps', type=int, default=10000)
         parser.add_argument('--num_eval_episodes', type=int, default=100)
-        parser.add_argument('--max_iters', type=int, default=10)
-        parser.add_argument('--num_steps_per_iter', type=int, default=100) # 10000 original
+        parser.add_argument('--max_iters', type=int, default=5)
+        parser.add_argument('--num_steps_per_iter', type=int, default=10000) # 10000 original
         parser.add_argument('--device', type=str, default='cpu')
         parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
-        parser.add_argument('--env', type=str, default='halfcheetah') #Hopper
+        parser.add_argument('--env', type=str, default='hopper') #Hopper
         return parser
     import csv
 
-    dictOfExp = {"K": [], "embed_dim": [],"n_layer": []}
+    dictOfExp = {"K": []}
+    #dictOfExp = {"K": [], "embed_dim": [],"n_layer": []}
 
-    test_K = [1, 3, 8, 20]
+    test_K = [1]
     for i in test_K: #testing context length
-        for k in range(5):
+        for k in range(1):
             parser = argumentParser()
             parser.add_argument('--n_layer', type=int, default=3)  # 3, 1
             parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
@@ -332,7 +333,7 @@ if __name__ == '__main__':
                 results[g].append(f"iteration = {g}")
                 results[g].append(f"K = {i}")
                 dictOfExp["K"].append(results[g])
-
+    """
     test_embed_dim = [32, 128]
     for i in test_embed_dim: #testing embedding dimension
         for k in range(5):
@@ -346,10 +347,10 @@ if __name__ == '__main__':
                 results[g].append(f"iteration = {g}")
                 results[g].append(f"embed_dim = {i}")
                 dictOfExp["embed_dim"].append(results[g])
-
-    test_n_layer = [1,3]
+    
+    test_n_layer = [1]
     for i in test_n_layer: #testing number of layers of the decoder
-        for k in range(5):
+        for k in range(1):
             parser = argumentParser()
             parser.add_argument('--K', type=int, default=20)
             parser.add_argument('--embed_dim', type=int, default=128)  # 128 og 32
@@ -360,8 +361,8 @@ if __name__ == '__main__':
                 results[g].append(f"iteration = {g}")
                 results[g].append(f"n_layer = {i}")
                 dictOfExp["n_layer"].append(results[g])
-
-    with open('ReplicationValues.csv', 'w', encoding='UTF8') as f:
+        """
+    with open('ReplicationValues1.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         header.append("iteration")
         header.append("Experiment identifier")

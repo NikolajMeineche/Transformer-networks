@@ -338,8 +338,8 @@ if __name__ == '__main__':
     parser.add_argument('--weight_decay', '-wd', type=float, default=1e-4)
     parser.add_argument('--warmup_steps', type=int, default=10000)#10000
     parser.add_argument('--num_eval_episodes', type=int, default=100)#100
-    parser.add_argument('--max_iters', type=int, default=10)#10
-    parser.add_argument('--num_steps_per_iter', type=int, default=1)#10000
+    parser.add_argument('--max_iters', type=int, default=1)#10
+    parser.add_argument('--num_steps_per_iter', type=int, default=10000)#10000
     parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--log_to_wandb', '-w', type=bool, default=False)
 
@@ -354,7 +354,7 @@ if __name__ == '__main__':
 
 
     #For loop over constant R2, ie. with varying R1 values
-
+    """
     i = 0
     with open('hopper_testR1values1422.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -372,11 +372,11 @@ if __name__ == '__main__':
             for i in range(len(data_all_experiment)):
                 writer.writerow(data_all_experiment[i])
 
-"""
-    i = 0
-    with open('hopper_testR2values.csv', 'w', encoding='UTF8') as f:
+    """
+    i =
+    with open('new_hopper_testR2values8+og0.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        for R2_value in [   0.   ,  237.105,  474.21 ,  711.315,  948.42 , 1185.525, 1422.63 , 1659.735, 1896.84 , 2133.945]:
+        for R2_value in [-0.665,-0.76 , -0.855,0]:#[-0.   , -0.095, -0.19 , -0.285, -0.38 , -0.475, -0.57 , -0.665,-0.76 , -0.855]:
         #for R2_value in np.linspace(p_min_tested_R * expert_performanceR2, p_max_tested_R * expert_performanceR2,n_tested_R_values, endpoint=True):
             # write the header
             data_all_experiment, header = experiment(expert_performanceR1, R2_value, 'Vanilla_DT_gym-experiment',
@@ -393,6 +393,4 @@ if __name__ == '__main__':
             helper_list.append(R2_value)
             writer.writerow(helper_list)
 
-
-"""
 
